@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowJs": false,
+    "baseUrl": ".",
+    "paths": {
+      "@eleos/shared": [
+        "packages/shared/src/index.ts"
+      ],
+      "@eleos/config": [
+        "packages/config/src/index.ts"
+      ],
+      "@eleos/ui": [
+        "packages/ui/src/index.ts"
+      ]
+    }
+  }
+}

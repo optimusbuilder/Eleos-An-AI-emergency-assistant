@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+node_modules/
+.next/
+dist/
+coverage/
+*.log
+phase.md
+walkthrough.md
+task.md
+implementation_plan.md
+*.db
+*.sqlite
+*.sqlite-journal
+Eleos-main/
