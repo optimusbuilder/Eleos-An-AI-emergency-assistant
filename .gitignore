@@ -14,3 +14,5 @@ implementation_plan.md
 *.sqlite
 *.sqlite-journal
 Eleos-main/
+about.md
+.gitignore
