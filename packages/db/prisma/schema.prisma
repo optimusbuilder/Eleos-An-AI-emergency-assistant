@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String             @id @default(uuid())
+  fullName            String
+  primaryPhone        String
+  homeLat             Float
+  homeLng             Float
+  currentLat          Float?
+  currentLng          Float?
+  locationUpdatedAt   DateTime?
+  transportMode       String?
+  mobilityNotes       String?
+  timezone            String             @default("UTC")
+  preferredChannel    String             @default("sms")
+  status              String             @default("active")
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  emergencyContacts   EmergencyContact[]
+  cases               Case[]
+}
+
+model EmergencyContact {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name           String
+  phone          String
+  relationship   String
+  priorityOrder  Int      @default(0)
+  notifyEnabled  Boolean  @default(true)
+  createdAt      DateTime @default(now())
+}
+
+model Incident {
+  id                String           @id @default(uuid())
+  incidentType      String
+  title             String
+  description       String?
+  severity          String
+  status            String           @default("monitoring")
+  confidence        String
+  sourceCount       Int              @default(0)
+  locationName      String?
+  centerLat         Float
+  centerLng         Float
+  radiusMeters      Float
+  geojson           String?
+  recommendedAction String?
+  firstSeenAt       DateTime         @default(now())
+  lastSeenAt        DateTime         @default(now())
+  resolvedAt        DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  sources           IncidentSource[]
+  cases             Case[]
+}
+
+model IncidentSource {
+  id               String   @id @default(uuid())
+  incidentId       String
+  incident         Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  sourceType       String
+  sourceName       String
+  sourceUrl        String?
+  rawTitle         String?
+  rawExcerpt       String?
+  publishedAt      DateTime?
+  retrievedAt      DateTime @default(now())
+  reliabilityScore Float    @default(1.0)
+  createdAt        DateTime @default(now())
+}
+
+model Case {
+  id                   String        @id @default(uuid())
+  userId               String
+  user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  incidentId           String
+  incident             Incident      @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  riskLevel            String
+  state                String
+  triggerReason        String?
+  distanceMeters       Float?
+  routeAffected        Boolean       @default(false)
+  initialChannel       String?
+  currentStatusSummary String?
+  userSafetyStatus     String?
+  openedAt             DateTime      @default(now())
+  lastActionAt         DateTime?
+  resolvedAt           DateTime?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  interactions         Interaction[]
+  actions              Action[]
+  checkIns             CheckIn[]
+}
+
+model Interaction {
+  id                String    @id @default(uuid())
+  caseId            String
+  case              Case      @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  interactionType   String
+  provider          String
+  providerMessageId String?
+  direction         String
+  deliveryStatus    String
+  startedAt         DateTime  @default(now())
+  endedAt           DateTime?
+  contentSummary    String?
+  transcript        String?
+  createdAt         DateTime  @default(now())
+}
+
+model Action {
+  id            String   @id @default(uuid())
+  caseId        String
+  case          Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  actionType    String
+  target        String?
+  status        String
+  payloadJson   String?
+  resultSummary String?
+  executedAt    DateTime?
+  createdAt     DateTime @default(now())
+}
+
+model CheckIn {
+  id            String   @id @default(uuid())
+  caseId        String
+  case          Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  scheduledFor  DateTime
+  status        String   @default("pending") // pending, completed, cancelled, missed
+  attemptCount  Int      @default(0)
+  lastAttemptAt DateTime?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
