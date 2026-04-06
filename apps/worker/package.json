@@ -10,7 +10,8 @@
     "scrape": "tsx --env-file=../../.env src/jobs/run-firecrawl.ts",
     "start": "tsx --env-file=../../.env src/index.ts",
     "test": "tsx --test src/**/*.test.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build": "echo 'No build step required for worker'"
   },
   "dependencies": {
     "@eleos/config": "0.0.0",
