@@ -4,7 +4,6 @@ import type {
   Incident,
   UserProfile,
 } from "@eleos/shared";
-import { createCommunicationsProvider } from "../../worker/src/actions/communications";
 import {
   PrismaActionRepository,
   PrismaCaseRepository,
@@ -12,13 +11,14 @@ import {
   PrismaIncidentRepository,
   PrismaInteractionRepository,
   PrismaUserRepository,
-} from "../../worker/src/db/prisma-repositories";
-import { readWorkerEnv } from "../../worker/src/config/env";
-import { ingestWatchers, sortIncidentsForTriage } from "../../worker/src/jobs/ingest-watchers";
-import { normalizeIncident } from "../../worker/src/normalizers/incident-normalizer";
-import { orchestrateAlert } from "../../worker/src/orchestrator/alert-orchestrator";
-import { scoreIncidentForUser } from "../../worker/src/risk/risk-engine";
-import { buildSourceWatchers } from "../../worker/src/watchers/source-watcher";
+} from "@eleos/db";
+import { createCommunicationsProvider } from "@eleos/worker/src/actions/communications";
+import { readWorkerEnv } from "@eleos/worker/src/config/env";
+import { ingestWatchers, sortIncidentsForTriage } from "@eleos/worker/src/jobs/ingest-watchers";
+import { normalizeIncident } from "@eleos/worker/src/normalizers/incident-normalizer";
+import { orchestrateAlert } from "@eleos/worker/src/orchestrator/alert-orchestrator";
+import { scoreIncidentForUser } from "@eleos/worker/src/risk/risk-engine";
+import { buildSourceWatchers } from "@eleos/worker/src/watchers/source-watcher";
 
 export interface DashboardSnapshot {
   user: UserProfile;

@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "exports": {
+    "./*": "./src/*.ts",
+    "./src/*": "./src/*.ts"
+  },
   "scripts": {
     "call-status": "tsx src/jobs/check-call-status.ts",
     "dev": "tsx watch src/index.ts",

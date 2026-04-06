@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { PrismaUserRepository } from "../../../../worker/src/db/prisma-repositories";
+import { PrismaUserRepository } from "@eleos/db";
 import { unstable_noStore as noStore } from "next/cache";
 
 export async function GET() {
