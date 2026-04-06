@@ -32,6 +32,7 @@ export interface IncidentRepository {
 
 export interface UserRepository {
   getPrimaryUser(): Promise<UserProfile>;
+  updateUser(id: string, data: Partial<UserProfile>): Promise<UserProfile>;
 }
 
 export interface CaseRepository {
@@ -127,7 +128,7 @@ export class PrismaIncidentRepository implements IncidentRepository {
     const records = await prisma.incident.findMany({
       include: { sources: true },
     });
-    return records.map((r) => ({
+    return records.map((r: any) => ({
       ...r,
       incidentType: r.incidentType as any,
       severity: r.severity as any,
@@ -138,7 +139,7 @@ export class PrismaIncidentRepository implements IncidentRepository {
       recommendedAction: r.recommendedAction ?? "",
       firstSeenAt: r.firstSeenAt.toISOString(),
       lastSeenAt: r.lastSeenAt.toISOString(),
-      sources: r.sources.map((s) => ({
+      sources: r.sources.map((s: any) => ({
         ...s,
         sourceType: s.sourceType as any,
         publishedAt: s.publishedAt?.toISOString(),
@@ -160,6 +161,8 @@ export class PrismaUserRepository implements UserRepository {
           id: "user_oluwa",
           fullName: env.primaryUserName,
           primaryPhone: env.primaryUserPhone,
+          primaryEmail: env.primaryUserEmail,
+          homeLabel: env.primaryUserHomeLabel,
           homeLat: env.primaryUserHomeLat,
           homeLng: env.primaryUserHomeLng,
           currentLat: env.primaryUserCurrentLat,
@@ -180,8 +183,8 @@ export class PrismaUserRepository implements UserRepository {
       id: user.id,
       fullName: user.fullName,
       primaryPhone: user.primaryPhone,
-      primaryEmail: env.primaryUserEmail, // not in db yet, use env
-      homeLabel: env.primaryUserHomeLabel,
+      primaryEmail: user.primaryEmail ?? undefined,
+      homeLabel: user.homeLabel ?? undefined,
       homeLat: user.homeLat,
       homeLng: user.homeLng,
       currentLat: user.currentLat ?? user.homeLat,
@@ -189,7 +192,7 @@ export class PrismaUserRepository implements UserRepository {
       timezone: user.timezone,
       transportMode: "car",
       preferredChannel: "call",
-      contacts: contacts.map(c => ({
+      contacts: contacts.map((c: any) => ({
         id: c.id,
         name: c.name,
         phone: c.phone,
@@ -198,6 +201,50 @@ export class PrismaUserRepository implements UserRepository {
         notifyEnabled: c.notifyEnabled
       })),
     };
+  }
+
+  async updateUser(id: string, data: Partial<UserProfile>): Promise<UserProfile> {
+    const updated = await prisma.user.update({
+      where: { id },
+      data: {
+        fullName: data.fullName,
+        primaryPhone: data.primaryPhone,
+        primaryEmail: data.primaryEmail,
+        homeLabel: data.homeLabel,
+        homeLat: data.homeLat,
+        homeLng: data.homeLng,
+        currentLat: data.currentLat,
+        currentLng: data.currentLng,
+        locationUpdatedAt: new Date(),
+      },
+    });
+
+    const contacts = await prisma.emergencyContact.findMany({
+      where: { userId: updated.id },
+    });
+
+    return {
+      id: updated.id,
+      fullName: updated.fullName,
+      primaryPhone: updated.primaryPhone,
+      primaryEmail: updated.primaryEmail ?? undefined,
+      homeLabel: updated.homeLabel ?? undefined,
+      homeLat: updated.homeLat,
+      homeLng: updated.homeLng,
+      currentLat: updated.currentLat ?? updated.homeLat,
+      currentLng: updated.currentLng ?? updated.homeLng,
+      timezone: updated.timezone,
+      transportMode: "car",
+      preferredChannel: "call",
+      contacts: contacts.map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        phone: c.phone,
+        relationship: c.relationship,
+        priorityOrder: c.priorityOrder,
+        notifyEnabled: c.notifyEnabled
+      })),
+    } as UserProfile;
   }
 }
 
@@ -237,7 +284,7 @@ export class PrismaCaseRepository implements CaseRepository {
 
   async list() {
     const records = await prisma.case.findMany();
-    return records.map((r) => ({
+    return records.map((r: any) => ({
       ...r,
       riskLevel: r.riskLevel as any,
       state: r.state as any,
@@ -278,7 +325,7 @@ export class PrismaActionRepository implements ActionRepository {
 
   async list() {
     const records = await prisma.action.findMany();
-    return records.map(r => ({
+    return records.map((r: any) => ({
       ...r,
       actionType: r.actionType as any,
       status: r.status as any,
@@ -319,7 +366,7 @@ export class PrismaInteractionRepository implements InteractionRepository {
 
   async list() {
     const records = await prisma.interaction.findMany();
-    return records.map(r => ({
+    return records.map((r: any) => ({
       ...r,
       interactionType: r.interactionType as any,
       provider: r.provider as any,
@@ -359,7 +406,7 @@ export class PrismaCheckInRepository implements CheckInRepository {
 
   async list() {
     const records = await prisma.checkIn.findMany();
-    return records.map(r => ({
+    return records.map((r: any) => ({
       ...r,
       status: r.status as any,
       notes: r.notes ?? undefined,

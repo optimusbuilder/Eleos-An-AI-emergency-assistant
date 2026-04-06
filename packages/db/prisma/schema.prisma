@@ -11,6 +11,8 @@ model User {
   id                  String             @id @default(uuid())
   fullName            String
   primaryPhone        String
+  primaryEmail        String?
+  homeLabel           String?
   homeLat             Float
   homeLng             Float
   currentLat          Float?
