@@ -1,0 +1,32 @@
+{
+  "name": "@eleos/worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "call-status": "tsx src/jobs/check-call-status.ts",
+    "dev": "tsx watch src/index.ts",
+    "drill": "tsx --env-file=../../.env src/jobs/run-drill.ts",
+    "scrape": "tsx --env-file=../../.env src/jobs/run-firecrawl.ts",
+    "start": "tsx --env-file=../../.env src/index.ts",
+    "test": "tsx --test src/**/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@eleos/config": "0.0.0",
+    "@eleos/db": "*",
+    "@eleos/shared": "0.0.0",
+    "@fastify/websocket": "^11.2.0",
+    "@google/genai": "^1.46.0",
+    "@mendable/firecrawl-js": "^4.17.0",
+    "fastify": "^5.8.4",
+    "ws": "^8.20.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  }
+}
